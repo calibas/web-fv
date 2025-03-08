@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Tabulator + SheetJS Example</title>
+
+  <!-- Tabulator CSS (from CDN) -->
+  <link href="https://unpkg.com/tabulator-tables@5.4/dist/css/tabulator.min.css" rel="stylesheet">
+  
+  <style>
+    body { font-family: sans-serif; }
+    #controls {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Tabulator + SheetJS Example</h1>
+
+<div id="controls">
+  <input type="file" id="fileInput" accept=".xlsx,.csv" />
+  <button id="saveXLSX" disabled>Save as XLSX</button>
+  <button id="saveCSV" disabled>Save as CSV</button>
+</div>
+
+<div id="my-table"></div>
+
+<div id="controls-bottom"></div>
+  <button id="addRow">Add row</button>
+</div>
+
+<!-- Tabulator JS (from CDN) -->
+<script src="https://unpkg.com/tabulator-tables@5.4/dist/js/tabulator.min.js"></script>
+
+<!-- SheetJS (from CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<script>
+// ---------------------------------------------------------------------
+// 1) Initialize an empty Tabulator (no data yet).
+// ---------------------------------------------------------------------
+const table = new Tabulator("#my-table", {
+  // Enable editing
+  // If you know your column structure, specify it here.
+  // For a quick demo, let Tabulator build columns automatically:
+//   autoColumns: true, 
+  // Let cells be edited as text:
+  editable: true,
+
+  // Some optional layout tweaks:
+  layout: "fitDataTable",
+  maxHeight: "400px",
+
+  // Callback: runs when data is loaded
+  dataLoaded: function(data) {
+    console.log("Data loaded into Tabulator:", data);
+  },
+});
+
+// ---------------------------------------------------------------------
+// 2) Handle file input (XLSX or CSV) with SheetJS, then populate table
+// ---------------------------------------------------------------------
+document.getElementById("fileInput").addEventListener("change", handleFile, false);
+
+function createHeader(headers) {
+    let columnHeaders = [];
+    for (const column of headers) {
+      if (column === "link") {
+        columnHeaders.push({title: column, field: column, formatter:linkFormatter});//, editor:"input"});
+      } else {
+        columnHeaders.push({title: column, field: column});//, editor:"input"});
+      }
+    }
+    return columnHeaders;
+}
+
+var linkFormatter = function(cell, formatterParams, onRendered){
+    let value = cell.getValue();
+    return (value) ? value.split(":")[1] : "";
+}
+
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const data = new Uint8Array(evt.target.result);
+    // Parse the file with SheetJS
+    const workbook = XLSX.read(data, { type: "array" });
+    
+    // Take the first worksheet
+    const firstSheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[firstSheetName];
+    
+    // Convert worksheet to JSON
+    // { header: 1 } => returns arrays of arrays.
+    // If you want an array of objects with keys from the first row, remove {header:1}.
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    // const jsonData = XLSX.utils.sheet_to_json(worksheet);
+    console.log(jsonData);
+   
+    // If you want the first row to be your column headers, remove it from data
+    // and let Tabulator use it:
+    // e.g.:
+    //    let headers = jsonData.shift(); // remove first row
+    //    Then build columns from headers, or let autoColumns parse it
+    //
+    // For a quick approach, just feed the array-of-arrays to Tabulator:
+    let headers = jsonData.shift();
+    table.setColumns(createHeader(headers));
+
+    // Rebuild the data to map row arrays to objects, with keys matching header values
+    const tabData = jsonData.map((rowArr) => {
+      const rowObj = {};
+      rowArr.forEach((cellValue, i) => {
+        rowObj[headers[i]] = cellValue;
+      });
+      return rowObj;
+    });
+    
+    // Set table data
+    table.setData(tabData).then(() => {
+      // Enable export buttons
+      document.getElementById("saveXLSX").disabled = false;
+      document.getElementById("saveCSV").disabled = false;
+    });
+  };
+  
+  reader.readAsArrayBuffer(file);
+}
+
+// ---------------------------------------------------------------------
+// 3) Saving/Exporting from Tabulator to XLSX or CSV using SheetJS
+// ---------------------------------------------------------------------
+document.getElementById("saveXLSX").addEventListener("click", function() {
+  exportTableData("xlsx");
+});
+document.getElementById("saveCSV").addEventListener("click", function() {
+  exportTableData("csv");
+});
+document.getElementById("addRow").addEventListener("click", function() {
+  addRowEvent();
+});
+
+function exportTableData(format) {
+  // Get data from Tabulator
+  const data = table.getData(); // array of objects
+
+  // Convert array-of-objects back to an array-of-arrays if we used "field0", "field1", etc.
+  // Alternatively, if your table columns are named something else, adjust accordingly.
+  // Let's first figure out the distinct fields in order from the table columns:
+  const columns = table.getColumns();
+  const fieldNames = columns.map(col => col.getField());
+  // Create an array-of-arrays
+  // First row: column headers
+  const sheetData = [fieldNames];
+  // Then each row
+  data.forEach(row => {
+    const rowArr = fieldNames.map(field => row[field]);
+    sheetData.push(rowArr);
+  });
+
+  // Create a SheetJS worksheet
+  const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+  // Create a new workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+  // Write file
+  if (format === "xlsx") {
+    XLSX.writeFile(workbook, "output.xlsx");
+  } else if (format === "csv") {
+    XLSX.writeFile(workbook, "output.csv", { bookType: "csv" });
+  }
+}
+
+function addRowEvent() {
+  table.addRow({},false); // array of objects
+
+}
+</script>
+
+</body>
+</html>
