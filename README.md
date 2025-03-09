@@ -1,7 +1,7 @@
-# web-fe
-HTML-based File Explorer
+# web-fv
+HTML-based File Viewer
 
-Supports listing folder contents, and viewing/editing spreadsheet, text and markdown files (WIP).
+Supports viewing/editing CSV, spreadsheet, text and markdown files (WIP).
 
 ## Credits
 Code:
