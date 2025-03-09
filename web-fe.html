@@ -2,24 +2,22 @@
 <html>
 <head>
   <meta charset="utf-8"/>
-  <title>Tabulator + SheetJS Example</title>
+  <title>Web FE</title>
 
   <!-- Tabulator CSS (from CDN) -->
-  <link href="https://unpkg.com/tabulator-tables@5.4/dist/css/tabulator.min.css" rel="stylesheet">
-  
-  <style>
-    body { font-family: sans-serif; }
-    #controls {
-      margin: 10px 0;
-    }
-  </style>
+  <link href="css/tabulator.min.css" rel="stylesheet">
+  <link href="css/page.css" rel="stylesheet">
+
+  <!-- <style>
+
+  </style> -->
 </head>
 <body>
 
 <h1>Tabulator + SheetJS Example</h1>
 
 <div id="controls">
-  <input type="file" id="fileInput" accept=".xlsx,.csv" />
+  <input type="file" id="fileInput" accept=".xlsx,.csv,.txt" />
   <button id="saveXLSX" disabled>Save as XLSX</button>
   <button id="saveCSV" disabled>Save as CSV</button>
 </div>
@@ -30,11 +28,11 @@
   <button id="addRow">Add row</button>
 </div>
 
-<!-- Tabulator JS (from CDN) -->
-<script src="https://unpkg.com/tabulator-tables@5.4/dist/js/tabulator.min.js"></script>
+<script src="js/tabulator.min.js"></script>
+<script src="js/xlsx.full.min.js"></script>
 
-<!-- SheetJS (from CDN) -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="js/export.js"></script>
+
 
 <script>
 // ---------------------------------------------------------------------
@@ -46,11 +44,13 @@ const table = new Tabulator("#my-table", {
   // For a quick demo, let Tabulator build columns automatically:
 //   autoColumns: true, 
   // Let cells be edited as text:
-  editable: true,
+  // editable: true,
 
   // Some optional layout tweaks:
-  layout: "fitDataTable",
-  maxHeight: "400px",
+  layout: "fitColumns",
+  maxHeight: "800px",
+  maxWidth: "90%",
+  width: "900px",
 
   // Callback: runs when data is loaded
   dataLoaded: function(data) {
@@ -66,8 +66,8 @@ document.getElementById("fileInput").addEventListener("change", handleFile, fals
 function createHeader(headers) {
     let columnHeaders = [];
     for (const column of headers) {
-      if (column === "link") {
-        columnHeaders.push({title: column, field: column, formatter:linkFormatter});//, editor:"input"});
+      if (column.toLowerCase() === "links") {
+        columnHeaders.push({title: column, field: column, maxWidth: "150px", formatter:linkFormatter});//, editor:"input"});
       } else {
         columnHeaders.push({title: column, field: column});//, editor:"input"});
       }
@@ -76,8 +76,25 @@ function createHeader(headers) {
 }
 
 var linkFormatter = function(cell, formatterParams, onRendered){
-    let value = cell.getValue();
-    return (value) ? value.split(":")[1] : "";
+    const value = cell.getValue();
+    let result = "";
+    if (value) {
+      const valArr = value.split(":");
+      if (valArr[0].startsWith("http")) {
+        result = `<a target="_blank" href='${value}'>Website</a><br />`
+      } else if (valArr[0] === "youtube") {
+        result = `<a target="_blank" href='https://www.youtube.com/watch?v=${valArr[1]}'><img class="link-icon" src="images/youtube.svg" /></a>`
+      } else {
+        console.log(`Unrecognized link type (${valArr[0]})`)
+      }
+    } //else {
+      let row = cell.getRow();
+      console.log(row._row.data);
+      let artist = (row._row.data.artist) ? row._row.data.artist.replace(/"/g, "").replace(/ /g, "+") : "";
+      let song = (row._row.data.song) ? "+" + row._row.data.song.replace(/"/g, "").replace(/ /g, "+") : "";
+      result += `<a target="_blank" href="https://www.youtube.com/results?search_query=${artist}${song}"><img class="link-icon" src="images/search.svg" /></a>`
+    //}
+    return result;
 }
 
 function handleFile(e) {
@@ -85,50 +102,25 @@ function handleFile(e) {
   if (!file) return;
 
   const reader = new FileReader();
+  reader.readAsText(file, "UTF-8")
   reader.onload = function(evt) {
-    const data = new Uint8Array(evt.target.result);
-    // Parse the file with SheetJS
-    const workbook = XLSX.read(data, { type: "array" });
+    // const data = new Uint8Array(evt.target.result);
+    // // Parse the file with SheetJS
+    // const workbook = XLSX.read(data, { type: "array" });
     
-    // Take the first worksheet
-    const firstSheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[firstSheetName];
+    // // Take the first worksheet
+    // const firstSheetName = workbook.SheetNames[0];
+    // const worksheet = workbook.Sheets[firstSheetName];
     
-    // Convert worksheet to JSON
-    // { header: 1 } => returns arrays of arrays.
-    // If you want an array of objects with keys from the first row, remove {header:1}.
-    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-    // const jsonData = XLSX.utils.sheet_to_json(worksheet);
-    console.log(jsonData);
-   
-    // If you want the first row to be your column headers, remove it from data
-    // and let Tabulator use it:
-    // e.g.:
-    //    let headers = jsonData.shift(); // remove first row
-    //    Then build columns from headers, or let autoColumns parse it
-    //
-    // For a quick approach, just feed the array-of-arrays to Tabulator:
-    let headers = jsonData.shift();
-    table.setColumns(createHeader(headers));
-
-    // Rebuild the data to map row arrays to objects, with keys matching header values
-    const tabData = jsonData.map((rowArr) => {
-      const rowObj = {};
-      rowArr.forEach((cellValue, i) => {
-        rowObj[headers[i]] = cellValue;
-      });
-      return rowObj;
-    });
-    
-    // Set table data
-    table.setData(tabData).then(() => {
-      // Enable export buttons
-      document.getElementById("saveXLSX").disabled = false;
-      document.getElementById("saveCSV").disabled = false;
-    });
-  };
-  
-  reader.readAsArrayBuffer(file);
+    // // Convert worksheet to JSON
+    // // { header: 1 } => returns arrays of arrays.
+    // // If you want an array of objects with keys from the first row, remove {header:1}.
+    // const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    const csvText = evt.target.result;
+    parseCSV(csvText);
+ 
+  // reader.readAsArrayBuffer(file);
+  }
 }
 
 // ---------------------------------------------------------------------
@@ -144,43 +136,94 @@ document.getElementById("addRow").addEventListener("click", function() {
   addRowEvent();
 });
 
-function exportTableData(format) {
-  // Get data from Tabulator
-  const data = table.getData(); // array of objects
-
-  // Convert array-of-objects back to an array-of-arrays if we used "field0", "field1", etc.
-  // Alternatively, if your table columns are named something else, adjust accordingly.
-  // Let's first figure out the distinct fields in order from the table columns:
-  const columns = table.getColumns();
-  const fieldNames = columns.map(col => col.getField());
-  // Create an array-of-arrays
-  // First row: column headers
-  const sheetData = [fieldNames];
-  // Then each row
-  data.forEach(row => {
-    const rowArr = fieldNames.map(field => row[field]);
-    sheetData.push(rowArr);
-  });
-
-  // Create a SheetJS worksheet
-  const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-
-  // Create a new workbook
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-  // Write file
-  if (format === "xlsx") {
-    XLSX.writeFile(workbook, "output.xlsx");
-  } else if (format === "csv") {
-    XLSX.writeFile(workbook, "output.csv", { bookType: "csv" });
-  }
-}
-
 function addRowEvent() {
   table.addRow({},false); // array of objects
-
 }
+
+function loadCsvFromQueryString() {
+  const params = new URLSearchParams(window.location.search);
+  const csvUrl = params.get("url"); // or whatever name you prefer
+  if (!csvUrl) return; // no param, nothing to do
+
+  // Attempt to fetch the CSV from csvUrl
+  fetch(csvUrl)
+    .then(response => {
+      // Make sure the fetch was successful
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      // Read the data as text (so we preserve UTF-8 characters)
+      return response.text();
+    })
+    .then(csvText => {
+      parseCSV(csvText);
+    })
+    .catch(err => {
+      console.error("Error fetching or parsing remote CSV:", err);
+      alert("Could not load CSV from the specified URL.");
+    });
+}
+
+function parseCSV(textString) {
+      // Now parse it with SheetJS, specifying { type: "string" }
+      let workbook;
+    try {
+      workbook = XLSX.read(textString, { type: "string" });
+    } catch (err) {
+      console.error("Error parsing CSV as UTF-8 text:", err);
+      return;
+    }
+
+    // Access the first sheet, convert to JSON, etc.
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    // const jsonData = XLSX.utils.sheet_to_json(worksheet);
+    console.log(jsonData);
+   
+    // If you want the first row to be your column headers, remove it from data
+    // and let Tabulator use it:
+    // e.g.:
+    //    let headers = jsonData.shift(); // remove first row
+    //    Then build columns from headers, or let autoColumns parse it
+    //
+
+    let headers = jsonData.shift();
+    let metadata = {};
+    // Check for comments at top
+    while (headers[0].startsWith("#")) {
+      let tempMeta = headers[0].substring(1).split(";");
+      tempMeta.forEach((metaValue) => {
+        let metaKVPair = metaValue.split(":");
+        if (metaKVPair.length == 2)
+          metadata[metaKVPair[0]] = metaKVPair[1];
+      })
+      headers = jsonData.shift();
+    }
+    table.setColumns(createHeader(headers));
+    console.log(metadata);
+
+    // Rebuild the data to map row arrays to objects, with keys matching header values
+    const tabData = jsonData.map((rowArr) => {
+      const rowObj = {};
+      rowArr.forEach((cellValue, i) => {
+        rowObj[headers[i]] = String(cellValue);
+      });
+      return rowObj;
+    });
+    
+    // Set table data
+    table.setData(tabData).then(() => {
+      // Enable export buttons
+      document.getElementById("saveXLSX").disabled = false;
+      document.getElementById("saveCSV").disabled = false;
+    });
+  }
+
+(function() {
+  loadCsvFromQueryString();
+})();
+
 </script>
 
 </body>
