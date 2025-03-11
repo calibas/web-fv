@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<h1>Tabulator + SheetJS Example</h1>
+<h1 id="page-title">Song list</h1>
 
 <div id="controls">
   <input type="file" id="fileInput" accept=".xlsx,.csv,.txt" />
@@ -21,15 +21,42 @@
 
 <div id="my-table"></div>
 
-<div id="controls-bottom"></div>
+<!-- <div id="controls-bottom"></div>
   <button id="addRow">Add row</button>
-</div>
+</div> -->
+
+  <!-- The player will be embedded in this div -->
+  <!-- <div id="player"></div> -->
+
+  <!-- Input to add new video IDs to the local queue -->
+  <div>
+    <label for="video-id-input">Video ID:</label>
+    <input id="video-id-input" type="text" />
+    <button onclick="addToLocalPlaylist()">Add to Local Playlist</button>
+  </div>
+
+  <!-- Buttons to control the playlist -->
+  <div style="margin-top: 1em;">
+    <button onclick="createPlaylist()">Generate Playlist</button>
+    <!-- <button onclick="previousVideo()">Previous</button> -->
+    <!-- <button onclick="nextVideo()">Next</button> -->
+  </div>
+
+  <!-- Display the current local playlist -->
+  <div style="margin-top: 1em;">
+    <strong>Local Playlist:</strong>
+    <ul id="local-playlist"></ul>
+  </div>
+  <div>
+    <a id="playlist-link"></a>
+  </div>
 
 <script src="js/tabulator.min.js"></script>
 <script src="js/xlsx.full.min.js"></script>
 
 <script src="js/export.js"></script>
 <script src="js/parse.js"></script>
+<script src="js/youtube.js"></script>
 
 <script>
 // ---------------------------------------------------------------------

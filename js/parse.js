@@ -18,7 +18,8 @@ var linkFormatter = function(cell, formatterParams, onRendered){
       if (valArr[0].startsWith("http")) {
         result = `<a target="_blank" href='${value}'>Website</a><br />`
       } else if (valArr[0] === "youtube") {
-        result = `<a target="_blank" href='https://www.youtube.com/watch?v=${valArr[1]}'><img class="link-icon" src="images/youtube.svg" /></a>`
+        result = `<a target="_blank" href='https://www.youtube.com/watch?v=${valArr[1]}'><img class="link-icon" src="images/youtube.svg" /></a> 
+        <a onclick="addToPlaylist('${valArr[1]}')">+</a>`
       } else {
         console.log(`Unrecognized link type (${valArr[0]})`)
       }
@@ -135,5 +136,8 @@ function loadCsvFromQueryString() {
         // Enable export buttons
         document.getElementById("saveXLSX").disabled = false;
         document.getElementById("saveCSV").disabled = false;
+        if (metadata.title) {
+          document.getElementById("page-title").textContent = metadata.title;
+        }
       });
     }
