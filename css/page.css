@@ -17,11 +17,11 @@ body { font-family: sans-serif; margin: 0px;}
 }
 .link-icon {
   width:20px;
-  vertical-align: top;
-  cursor: pointer;
 }
 .add-icon {
   font-size:20px;
+  vertical-align: top;
+  cursor: pointer;
 }
 .tabulator-row.tabulator-selectable:hover {
   cursor: default;
