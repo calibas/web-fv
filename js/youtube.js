@@ -59,25 +59,25 @@
    * Adds a video ID to the local playlist array
    * and updates the on-page display of the playlist.
    */
-  function addToLocalPlaylist() {
-    const input = document.getElementById('video-id-input');
-    const videoId = input.value.trim();
+  // function addToLocalPlaylist() {
+  //   const input = document.getElementById('video-id-input');
+  //   const videoId = input.value.trim();
   
-    // Simple validation
-    if (!videoId) {
-      alert('Please enter a valid video ID.');
-      return;
-    }
+  //   // Simple validation
+  //   if (!videoId) {
+  //     alert('Please enter a valid video ID.');
+  //     return;
+  //   }
   
-    // Add to array
-    localPlaylist.push(videoId);
+  //   // Add to array
+  //   localPlaylist.push(videoId);
   
-    // Clear out the text field
-    input.value = '';
+  //   // Clear out the text field
+  //   input.value = '';
   
-    // Update display
-    refreshLocalPlaylistDisplay();
-  }
+  //   // Update display
+  //   refreshLocalPlaylistDisplay();
+  // }
   
   /**
    * Displays the local playlist on the page.
@@ -140,8 +140,14 @@
   // }
 
   function addToPlaylist(videoId) {
+    // Keeping URL length under 2,000 characters
+    if (localPlaylist.length >= 162) {
+      alert('Max playlist length reached.');
+      return;
+    }
     localPlaylist.push(videoId);
     refreshLocalPlaylistDisplay();
+    createPlaylist();
   }
 
 function createPlaylist() {

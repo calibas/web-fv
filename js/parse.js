@@ -16,10 +16,10 @@ var linkFormatter = function(cell, formatterParams, onRendered){
     if (value) {
       const valArr = value.split(":");
       if (valArr[0].startsWith("http")) {
-        result = `<a target="_blank" href='${value}'>Website</a><br />`
+        result = `<a target="_blank" href='${value}'><img class="link-icon" src="images/link.svg" /></a>`
       } else if (valArr[0] === "youtube") {
         result = `<a target="_blank" href='https://www.youtube.com/watch?v=${valArr[1]}'><img class="link-icon" src="images/youtube.svg" /></a> 
-        <a onclick="addToPlaylist('${valArr[1]}')">+</a>`
+        <a class="add-icon" onclick="addToPlaylist('${valArr[1]}')">+</a>`
       } else {
         console.log(`Unrecognized link type (${valArr[0]})`)
       }
@@ -27,8 +27,8 @@ var linkFormatter = function(cell, formatterParams, onRendered){
       let row = cell.getRow();
       console.log(row._row.data);
       let artist = (row._row.data.artist) ? row._row.data.artist.replace(/"/g, "").replace(/ /g, "+") : "";
-      let song = (row._row.data.song) ? "+" + row._row.data.song.replace(/"/g, "").replace(/ /g, "+") : "";
-      result += `<a target="_blank" href="https://www.youtube.com/results?search_query=${artist}${song}"><img class="link-icon" src="images/search.svg" /></a>`
+      let song = (row._row.data.song) ? row._row.data.song.replace(/"/g, "").replace(/ /g, "+") : "";
+      result += `<a target="_blank" href="https://www.youtube.com/results?search_query=${artist}+${song}"><img class="link-icon" src="images/search.svg" /></a>`
     //}
     return result;
 }
@@ -134,8 +134,10 @@ function loadCsvFromQueryString() {
       // Set table data
       table.setData(tabData).then(() => {
         // Enable export buttons
-        document.getElementById("saveXLSX").disabled = false;
+        // document.getElementById("saveXLSX").disabled = false;
         document.getElementById("saveCSV").disabled = false;
+        // document.getElementById("saveXLSX").style.visibility = 'visible';
+        document.getElementById("saveCSV").style.visibility = 'visible';
         if (metadata.title) {
           document.getElementById("page-title").textContent = metadata.title;
         }
