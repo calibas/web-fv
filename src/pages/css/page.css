@@ -1,0 +1,10 @@
+#root {
+    width: 100%;
+    margin: 10px 10px;
+}
+
+#page-title {
+    margin-top:5px;
+    color: #eee;
+    font-size: 1.8em;
+}

@@ -1,0 +1,22 @@
+.tabulator-col-title {
+    text-transform: capitalize;
+  }
+
+  .link-icon {
+    width:20px;
+    height:20px;
+  }
+
+  .add-icon {
+    font-size:20px;
+    vertical-align: top;
+    cursor: pointer;
+  }
+
+  .tabulator-row.tabulator-selectable:hover {
+    cursor: default;
+  }
+
+  .tabulator-cell[tabulator-field="links"] {
+    text-align: center;
+}
