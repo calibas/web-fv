@@ -140,7 +140,7 @@ const createHeader = (headers: (string | number | null)[]) => {
   for (const column of headers) {
     if (typeof column === "string") {
       if (column.toLowerCase() === "links") {
-        columnHeaders.push({ title: column, field: column, maxWidth: 80 }); //, formatter:linkFormatter});//, editor:"input"});
+        columnHeaders.push({ title: column, field: column, maxWidth: 95 }); //, formatter:linkFormatter});//, editor:"input"});
       } else {
         columnHeaders.push({ title: column, field: column }); //, editor:"input"});
       }

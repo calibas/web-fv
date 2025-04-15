@@ -97,6 +97,7 @@ const MyTabulator: React.FC<MyTabulatorProps> = ({ data, columns }) => {
         columns: columnsCopy,
         layout: "fitColumns",
         height:"100%",
+        rowHeight:33,
       });
       // Listen for the "tableBuilt" event.
       tabulatorInstance.current.on("tableBuilt", () => {

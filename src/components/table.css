@@ -3,8 +3,8 @@
   }
 
   .link-icon {
-    width:20px;
-    height:20px;
+    width:21px;
+    height:21px;
   }
 
   .add-icon {
@@ -19,4 +19,8 @@
 
   .tabulator-cell[tabulator-field="links"] {
     text-align: center;
+}
+
+.tabulator-cell[tabulator-field="links"] a {
+  padding:0px 2px;
 }
