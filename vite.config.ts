@@ -9,5 +9,20 @@ export default defineConfig({
       // Disabled this to allow for URL parameters
       strict: false,
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Group markdown-related dependencies into a separate chunk
+          'markdown-editor': [
+            'react-markdown',
+            'remark-gfm',
+            'rehype-sanitize',
+            'rehype-slug',
+          ],
+        }
+      }
+    }
   }
 })

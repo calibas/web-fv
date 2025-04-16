@@ -1,0 +1,121 @@
+/* MarkdownBlog.css */
+.markdown-blog-container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  /* Image alignment styles */
+  .blog-image {
+    max-width: 100%;
+    height: auto;
+    margin: 1.5rem 0;
+    border-radius: 4px;
+    background-color: #f7f7f7;
+    border: 1px solid #e8e8e8;
+  }
+  
+  .align-left {
+    float: left;
+    margin-right: 1.5rem;
+    margin-bottom: 0.5rem;
+    margin-top:0rem;
+    max-height: 200px;
+  }
+  
+  .align-center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .align-right {
+    float: right;
+    margin-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    margin-top:0rem;
+    max-height: 200px;
+  }
+  
+  /* Clear floats after images */
+  /* .markdown-blog-container p:after {
+    content: "";
+    display: table;
+    clear: both;
+  } */
+  
+  /* Heading styles */
+  .blog-heading {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    line-height: 1.25;
+    scroll-margin-top: 100px; /* For anchor links */
+    clear: both;
+  }
+  
+  .blog-h1 {
+    font-size: 2rem;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.3rem;
+  }
+  
+  .blog-h2 {
+    font-size: 1.5rem;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.3rem;
+  }
+  
+  .blog-h3 {
+    font-size: 1.25rem;
+  }
+  
+  /* Blockquote styling */
+  .blog-blockquote {
+    padding: 0 1rem;
+    color: #6a737d;
+    border-left: 0.25rem solid #dfe2e5;
+    margin: 1rem 0;
+  }
+  
+  /* Code blocks */
+  pre {
+    background-color: #f6f8fa;
+    border-radius: 3px;
+    overflow: auto;
+    padding: 16px;
+    margin: 1rem 0;
+  }
+  
+  /* Inline code */
+  :not(pre) > code {
+    background-color: rgba(27, 31, 35, 0.05);
+    border-radius: 3px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    padding: 0.2em 0.4em;
+    font-size: 85%;
+  }
+  
+  /* Table styling */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  th, td {
+    border: 1px solid #dfe2e5;
+    padding: 6px 13px;
+  }
+  
+  thead {
+    background-color: #f6f8fa;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f6f8fa;
+  }
+  

@@ -11,6 +11,7 @@ import Home from "./pages/Home.tsx";
 import About from './pages/About';
 import FileViewer from './pages/FileViewer';
 import FileUploader from './pages/FileUploader';
+import BlogPage from "./pages/BlogPage.tsx";
 import ErrorBoundary from "./ErrorBoundary.tsx";
 // import SongList from "./pages/SongList.tsx";
 import AGGrid from "./pages/AGGrid.tsx";
@@ -24,7 +25,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <AGGrid />,
+        element: <BlogPage />,
       },
       {
         path: "/about",
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: "/home",
         element: <Home />,
+      },
+      {
+        path: "/grid",
+        element: <AGGrid />,
       },
       {
         path: "*",
